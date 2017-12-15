@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>2048</title>
+        <script src="phaser.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
+        <style>
+          body {
+            background-color: black;
+          }
+          @font-face {
+            font-family: upheaval;
+            src: url(upheaval.otf);
+          }
+        </style>
+    </head>
+    <body>
+      <script>
+
+      var game = new Phaser.Game(800, 700, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+
+      function preload() {
+
+          game.load.image('ball', 'assets/sprites/yellow_ball.png');
+
+      }
+
+      var ball;
+
+      function create() {
+        game.stage.backgroundColor = "#f5f5dc";
+        ball = game.add.sprite(300, 0, 'ball');
+        var bounce = game.add.tween(ball);
+        bounce.to({y: game.world.height - ball.height }, 2000);
+        bounce.start();
+        keyQ = game.input.keyboard.addKey(Phaser.Keyboard.Q)
+        card = game.add.graphics();
+        card.lineStyle(10, 0xb318ab, 1);
+        card.drawRoundedRect(-170, 20, 340, 600);
+        card.lineStyle(10, 0xcccccc, 1);
+        card.beginFill(0xcccccc);
+        card.drawRoundedRect(-140, 250, 280, 280);
+        card.x = game.width / 2;
+
+        bar = game.add.graphics();
+        bar.lineStyle(10, 0x39aaab, 1);
+        bar.beginFill(0x222222, 0.95);
+        bar.drawRoundedRect(-140, -650, 280, 280);
+        bar.angle = 0;
+        bar.x = game.width / 2;
+        bar.y = 900;
+        negative = true;
+
+      }
+      function update() {
+        if (bar.angle > 10) {
+          negative = !negative;
+        } else if (bar.angle < -10) {
+          negative = !negative;
+        }
+
+        if (negative) {
+          bar.angle -= .1
+        } else {
+          bar.angle += .1
+        }
+
+      }
+      </script>
+    </body>
+</html>
