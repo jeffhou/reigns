@@ -209,17 +209,41 @@ class ReignsGame {
     this.choices.push(
       new Choice(
         this.characters["rayn"],
-        "Did you hear the new TSwift album?? I'm in love <3",
-        new Option("Don't know, don't care.", -10, -20, 5, 5),
-        new Option("Ahhhh ", -10, +30, 0, -20)
+        "Did you hear the new T.Swift album?? I think I'm in love <3",
+        new Option("Don't know, don't care.", 0, -2, 0, 0),
+        new Option("Ahhhh (fangirls)", 0, 2, 0, -2)
       )
     );
     this.choices.push(
       new Choice(
         this.characters["twitch"],
-        "I like you a lot!",
-        new Option("I don't like you.", -10, -20, 5, 5),
-        new Option("I love you too!", -10, +30, 0, -20)
+        "I'm a wizard!",
+        new Option("Wizards don't exist.", 5, -2, -10, 0),
+        new Option("I've got my blacklist ready.", -10, 2, 10, -5)
+      )
+    );
+    this.choices.push(
+      new Choice(
+        this.characters["boba"],
+        "Help me plant tulips?",
+        new Option("GAH! Nature!!", 0, -5, 0, 5),
+        new Option("You are too adorable.", 2, 5, 0, 0)
+      )
+    );
+    this.choices.push(
+      new Choice(
+        this.characters["titch"],
+        "I put a spell on you!",
+        new Option("Crazy lady with tongs!", 7, -2, -1, -5),
+        new Option("I dare you.", -5, -1, -5, -5)
+      )
+    );
+    this.choices.push(
+      new Choice(
+        this.characters["cleo"],
+        "//The empress looks your way",
+        new Option("//wiggle hips suggestively", -7, 7, -2, 0),
+        new Option("//act disinterested", 2, -1, 0, 0)
       )
     );
   }
