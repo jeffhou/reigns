@@ -85,9 +85,15 @@ class ReignsGame {
 
   preload () {
     this.game.load.image('cardback', 'bgcard.png');
+    this.game.load.image('reigns_man1', 'reigns_man1.png');
     this.game.load.image('reigns_man2', 'reigns_man2.png');
+    this.game.load.image('reigns_man3', 'reigns_man3.png');
     this.game.load.image('reigns_woman1', 'reigns_woman1.png');
+    this.game.load.image('reigns_woman2', 'reigns_woman2.png');
+    this.game.load.image('reigns_woman3', 'reigns_woman3.png');
     this.game.load.image('topbar', 'topbar.png');
+    this.game.load.image('rightshade', 'leftshade.png');
+    this.game.load.image('leftshade', 'rightshade.png');
   }
 
   setStat (stat, value) {
@@ -165,32 +171,52 @@ class ReignsGame {
     cardback.scale.setTo(ReignsGame.SCALE, ReignsGame.SCALE);
     cardback.y = cardback.height * 3 + HEIGHT * 0.34;
     ReignsGame.POSITION = cardback.position;
+  }
 
-
+  setUpText () {
     //setup text
-    var style = { font: "bold 36px Arial", fill: "#000", boundsAlignH: "center", textAlign: "center" };
-    this.leftText = game.add.text(0, 180, "RIGHT...", style);
-    this.rightText = game.add.text(0, 280, "LEFT...", style);
-    this.mainText = game.add.text(0, 380, "LEFT...", style);
+    var game = this.game;
+    var style = { font: "40px alegreyasans", fill: "#fff", boundsAlignH: "center", textAlign: "left" };
+    this.rightText = game.add.text(WIDTH / 2 + 50, 400, "RIGHT...", style);
+    style = { font: "40px alegreyasans", fill: "#fff", boundsAlignH: "center", textAlign: "right" };
+    this.leftText = game.add.text(WIDTH / 2 - 350, 400, "LEFT...", style);
+    style = { font: "40px alegreyasans", fill: "#000", boundsAlignH: "center", textAlign: "center" };
+    this.mainText = game.add.text(0, 0, "LEFT...", style);
+    this.mainText.setTextBounds(100, 200, WIDTH - 200, 100);
+    this.mainText.wordWrap = true;
+    this.mainText.wordWrapWidth = WIDTH - 200;
+
   }
 
   setUpChoices () {
     this.characters = {}
-    this.characters["dude"] = new Character("Rayn", "reigns_man2");
-    this.characters["girl"] = new Character("Lana", "reigns_woman1");
+    this.characters["topher"] = new Character("Topher", "reigns_man1");
+    this.characters["rayn"] = new Character("Rayn", "reigns_man2");
+    this.characters["twitch"] = new Character("Twitch", "reigns_man3");
+    this.characters["boba"] = new Character("Boba", "reigns_woman1");
+    this.characters["titch"] = new Character("Titch", "reigns_woman2");
+    this.characters["cleo"] = new Character("Cleo", "reigns_woman3");
     this.choices = [];
     //character, text, leftOption, rightOption
     this.choices.push(
       new Choice(
-        this.characters["dude"],
-        "We should play Hannah Montana for the masses!",
-        new Option("I don't like music.", -10, -20, 5, 5),
-        new Option("I love Miley Cyrus!", -10, +30, 0, -20)
+        this.characters["topher"],
+        "Yo dude! I just got this fresh $5 bill from my apple pie sales!",
+        new Option("Yoink!", -20, -10, 0, 10),
+        new Option("Sweet bro, let's invest that moola.", 5, 20, 2, 0)
       )
     );
     this.choices.push(
       new Choice(
-        this.characters["girl"],
+        this.characters["rayn"],
+        "Did you hear the new TSwift album?? I'm in love <3",
+        new Option("Don't know, don't care.", -10, -20, 5, 5),
+        new Option("Ahhhh ", -10, +30, 0, -20)
+      )
+    );
+    this.choices.push(
+      new Choice(
+        this.characters["twitch"],
         "I like you a lot!",
         new Option("I don't like you.", -10, -20, 5, 5),
         new Option("I love you too!", -10, +30, 0, -20)
@@ -226,9 +252,28 @@ class ReignsGame {
     this.activeCharacter = character;
   }
 
+  setUpShades () {
+    var game = this.game;
+    this.leftshade = game.add.sprite(WIDTH / 2, 0, "leftshade");
+    this.leftshade.anchor.setTo(ReignsGame.ANCHOR.x, ReignsGame.ANCHOR.y);
+    this.leftshade.position.setTo(ReignsGame.POSITION.x, ReignsGame.POSITION.y);
+    this.leftshade.scale.setTo(ReignsGame.SCALE);
+    this.leftshade.angle = 0;
+    this.leftshade.alpha = 0;
+
+    this.rightshade = game.add.sprite(WIDTH / 2, 0, "rightshade");
+    this.rightshade.anchor.setTo(ReignsGame.ANCHOR.x, ReignsGame.ANCHOR.y);
+    this.rightshade.position.setTo(ReignsGame.POSITION.x, ReignsGame.POSITION.y);
+    this.rightshade.scale.setTo(ReignsGame.SCALE);
+    this.rightshade.angle = 0;
+    this.rightshade.alpha = 0;
+  }
+
   create () {
     ReignsGame.getInstance().createFoundationGraphics();
     ReignsGame.getInstance().setUpChoices();
+    ReignsGame.getInstance().setUpShades();
+    ReignsGame.getInstance().setUpText();
     ReignsGame.getInstance().activate();
     ReignsGame.getInstance().setUpStats();
   }
@@ -236,23 +281,35 @@ class ReignsGame {
   turnCardLeft () {
     if (ReignsGame.getInstance().activeChoice.character.image.angle < 10) {
       ReignsGame.getInstance().activeChoice.character.image.angle += .5;
+      ReignsGame.getInstance().leftshade.angle += .5;
+      ReignsGame.getInstance().rightshade.angle += .5;
     }
   }
 
   turnCardRight () {
     if (ReignsGame.getInstance().activeChoice.character.image.angle > -10) {
       ReignsGame.getInstance().activeChoice.character.image.angle -= .5;
+      ReignsGame.getInstance().leftshade.angle -= .5;
+      ReignsGame.getInstance().rightshade.angle -= .5;
     }
   }
 
   turnCardCenter () {
     var image = ReignsGame.getInstance().activeChoice.character.image;
+    var leftshade = ReignsGame.getInstance().leftshade;
+    var rightshade = ReignsGame.getInstance().rightshade;
     if (image.angle > 0.5) {
       image.angle -= 0.5;
+      rightshade.angle -= 0.5;
+      leftshade.angle -= 0.5;
     } else if (image.angle < -0.5) {
       image.angle += 0.5;
+      rightshade.angle += 0.5;
+      leftshade.angle += 0.5;
     } else {
       image.angle = 0;
+      rightshade.angle = 0;
+      leftshade.angle = 0;
     }
   }
 
@@ -280,6 +337,10 @@ class ReignsGame {
     image.y += parseInt(image.y / 110);
     image.angle *= 1.05;
     this.inputDisabled = true;
+    this.leftshade.alpha = 0;
+    this.rightshade.alpha = 0;
+    this.leftText.alpha = 0;
+    this.rightText.alpha = 0;
   }
 
   shouldTurnCenter () {
@@ -294,7 +355,7 @@ class ReignsGame {
       if (this.cardShouldFall(image)) {
         this.fall(image);
       } else {
-        //
+        // finished falling
         var option;
         if (image.angle > 0) {
           // right choice
@@ -312,14 +373,20 @@ class ReignsGame {
   adjustTextDisplay () {
     var image = ReignsGame.getInstance().activeChoice.character.image;
     if (image.angle > 7.5) {
-      this.leftText.alpha = 1; // right
-      this.rightText.alpha = 0;
+      this.leftText.alpha = 0; // right
+      this.rightText.alpha = 1;
+      this.leftshade.alpha = 1;
+      this.rightshade.alpha = 0;
     } else if (image.angle < -7.5) {
-      this.rightText.alpha = 1; // left
-      this.leftText.alpha = 0;
+      this.rightText.alpha = 0; // left
+      this.leftText.alpha = 1;
+      this.leftshade.alpha = 0;
+      this.rightshade.alpha = 1;
     } else {
       this.leftText.alpha = 0;
       this.rightText.alpha = 0;
+      this.leftshade.alpha = 0;
+      this.rightshade.alpha = 0;
     }
   }
 
