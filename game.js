@@ -17,8 +17,8 @@ Pointer.getInstance = function () {
   return Pointer.instance;
 }
 
-const WIDTH = document.body.clientWidth;
-const HEIGHT = window.innerHeight;
+const WIDTH = 808;
+const HEIGHT = 917;
 const STATS = ["religion", "people", "military", "money"];
 var SCALE;
 
