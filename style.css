@@ -1,0 +1,9 @@
+body {
+  background-color: black;
+  margin: 0px;
+}
+
+@font-face {
+  font-family: alegreyasans;
+  src: url(alegreyasans.ttf);
+}
