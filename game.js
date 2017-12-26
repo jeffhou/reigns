@@ -62,11 +62,12 @@ class Option {
 }
 
 class Choice {
-  constructor (character, text, leftOption, rightOption) {
+  constructor (character, text, leftOption, rightOption, restart=false) {
     this.character = character;
     this.text = text;
     this.left = leftOption;
     this.right = rightOption;
+    this.restart = restart;
   }
 }
 
@@ -77,10 +78,26 @@ class ReignsGame {
   }
 
   processOption (option) {
-    for (let i = 0; i < STATS.length; i++) {
-      this.increaseStat(STATS[i], option.stats[STATS[i]]);
+    if (ReignsGame.getInstance().activeChoice.restart) {
+      this.resetStats();
+      this.nextCard();
+    } else {
+      var gameEnded = false;
+      for (let i = 0; i < STATS.length; i++) {
+        this.increaseStat(STATS[i], option.stats[STATS[i]]);
+        if (this.stats[STATS[i]] < 0 || this.stats[STATS[i]] > 110) {
+          gameEnded = true;
+        }
+      }
+
+      if (gameEnded) {
+        ReignsGame.getInstance().activeChoice.character.resetImage();
+        this.setActiveChoice(this.restartCard);
+        this.inputDisabled = false;
+      } else {
+        this.nextCard();
+      }
     }
-    // TODO if not 0 - 100, gameover
   }
 
   preload () {
@@ -88,6 +105,7 @@ class ReignsGame {
     this.game.load.image('reigns_man1', 'reigns_man1.png');
     this.game.load.image('reigns_man2', 'reigns_man2.png');
     this.game.load.image('reigns_man3', 'reigns_man3.png');
+    this.game.load.image('reigns_man4', 'reigns_man4.png');
     this.game.load.image('reigns_woman1', 'reigns_woman1.png');
     this.game.load.image('reigns_woman2', 'reigns_woman2.png');
     this.game.load.image('reigns_woman3', 'reigns_woman3.png');
@@ -196,6 +214,7 @@ class ReignsGame {
     this.characters["boba"] = new Character("Boba", "reigns_woman1");
     this.characters["titch"] = new Character("Titch", "reigns_woman2");
     this.characters["cleo"] = new Character("Cleo", "reigns_woman3");
+    this.characters["sleepygary"] = new Character("Sleepy Gary", "reigns_man4");
     this.choices = [];
     //character, text, leftOption, rightOption
     this.choices.push(
@@ -246,6 +265,14 @@ class ReignsGame {
         new Option("//act disinterested", 2, -1, 0, 0)
       )
     );
+
+    this.restartCard = new Choice(
+      this.characters["sleepygary"],
+      "Wake up! That was all a dream!",
+      new Option("What...", 0, 0, 0, 0),
+      new Option("What...", 0, 0, 0, 0),
+      true
+    );
   }
 
   setActiveChoice (choice) {
@@ -257,13 +284,18 @@ class ReignsGame {
     this.leftText.text = choice.left.text;
     this.rightText.text = choice.right.text;
     this.mainText.text = choice.text;
-
   }
 
   setUpStats () {
     this.stats = {}
     for (let i = 0; i < STATS.length; i++) {
       this.stats[STATS[i]] = 0;
+      this.setStat(STATS[i], 55);
+    }
+  }
+
+  resetStats () {
+    for (let i = 0; i < STATS.length; i++) {
       this.setStat(STATS[i], 55);
     }
   }
@@ -389,7 +421,6 @@ class ReignsGame {
           option = this.activeChoice.right;
         }
         option.activate();
-        this.nextCard();
       }
     }
   }
