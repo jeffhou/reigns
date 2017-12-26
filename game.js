@@ -19,6 +19,7 @@ Pointer.getInstance = function () {
 
 const WIDTH = document.body.clientWidth;
 const HEIGHT = window.innerHeight;
+const STATS = ["religion", "people", "military", "money"];
 var SCALE;
 
 class Character {
@@ -47,10 +48,11 @@ class Character {
 
 class Option {
   constructor (text, religionChange, peopleChange, militaryChange, moneyChange) {
-    this.religionChange = religionChange;
-    this.peopleChange = peopleChange;
-    this.militaryChange = militaryChange;
-    this.moneyChange = moneyChange;
+    this.stats = {};
+    this.stats["religion"] = religionChange;
+    this.stats["people"] = peopleChange;
+    this.stats["military"] = militaryChange;
+    this.stats["money"] = moneyChange;
     this.text = text;
   }
 
@@ -72,17 +74,12 @@ class ReignsGame {
 
   constructor () {
     this.game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'reigns', { preload: this.preload, create: this.create, update: this.update });
-    this.religion = 50;
-    this.people = 50;
-    this.military = 50;
-    this.money = 50;
   }
 
   processOption (option) {
-    this.religion += option.religionChange;
-    this.people += option.peopleChange;
-    this.military += option.militaryChange;
-    this.money += option.moneyChange;
+    for (let i = 0; i < STATS.length; i++) {
+      this.increaseStat(STATS[i], option.stats[STATS[i]]);
+    }
     // TODO if not 0 - 100, gameover
   }
 
@@ -90,6 +87,30 @@ class ReignsGame {
     this.game.load.image('cardback', 'bgcard.png');
     this.game.load.image('reigns_man2', 'reigns_man2.png');
     this.game.load.image('reigns_woman1', 'reigns_woman1.png');
+    this.game.load.image('topbar', 'topbar.png');
+  }
+
+  setStat (stat, value) {
+    if (!STATS.includes(stat)) {
+      throw "[Error] Incorrect Stat '" + stat + "'";
+    }
+    this.stats[stat] = value;
+    this.updateStatBar(stat);
+  }
+
+  increaseStat (stat, amount) {
+    if (!STATS.includes(stat)) {
+      throw "[Error] Incorrect Stat '" + stat + "'";
+    }
+    this.stats[stat] += amount;
+    this.updateStatBar(stat);
+  }
+
+  updateStatBar (stat) {
+    if (!STATS.includes(stat)) {
+      throw "[Error] Incorrect Stat '" + stat + "'";
+    }
+    this.progressBars[stat].scale.y = 110 - this.stats[stat] + 1;
   }
 
   createFoundationGraphics () {
@@ -99,11 +120,41 @@ class ReignsGame {
     game.stage.backgroundColor = "#bca56b";
 
     // draw top and bottom
-    var card = game.add.graphics();
+    this.card = game.add.graphics();
+    var card = this.card;
     card.lineStyle(1, 0x291a0c, 1);
     card.beginFill(0x291a0c);
     card.drawRect(0, HEIGHT - 50, WIDTH, 50); // bottom
-    card.drawRect(0, 0, WIDTH, 150); // top
+    card.beginFill(0xe8dfbe);
+    card.drawRect(0, 0, WIDTH, 150); // bottom
+
+    this.progressBars = {};
+    this.progressBars["religion"] = game.add.graphics();
+    this.progressBars["religion"].x = 124;
+    this.progressBars["religion"].y = 19;
+    this.progressBars["religion"].beginFill(0xbca56b);
+    this.progressBars["religion"].drawRect(0, 0, 93, 1);
+
+    this.progressBars["people"] = game.add.graphics();
+    this.progressBars["people"].x = 279;
+    this.progressBars["people"].y = 19;
+    this.progressBars["people"].beginFill(0xbca56b);
+    this.progressBars["people"].drawRect(0, 0, 93, 1);
+
+    this.progressBars["military"] = game.add.graphics();
+    this.progressBars["military"].x = 434;
+    this.progressBars["military"].y = 19;
+    this.progressBars["military"].beginFill(0xbca56b);
+    this.progressBars["military"].drawRect(0, 0, 93, 1);
+
+    this.progressBars["money"] = game.add.graphics();
+    this.progressBars["money"].x = 589;
+    this.progressBars["money"].y = 19;
+    this.progressBars["money"].beginFill(0xbca56b);
+    this.progressBars["money"].drawRect(0, 0, 93, 1);
+
+    var topbar = game.add.sprite(WIDTH / 2, 0, "topbar");
+    topbar.anchor.x = 0.5;
 
     //draw card back
     var cardback = game.add.sprite(WIDTH / 2, 0, "cardback");
@@ -159,6 +210,14 @@ class ReignsGame {
 
   }
 
+  setUpStats () {
+    this.stats = {}
+    for (let i = 0; i < STATS.length; i++) {
+      this.stats[STATS[i]] = 0;
+      this.setStat(STATS[i], 55);
+    }
+  }
+
   activate () {
     this.setActiveChoice(this.choices[0]);
   }
@@ -171,6 +230,7 @@ class ReignsGame {
     ReignsGame.getInstance().createFoundationGraphics();
     ReignsGame.getInstance().setUpChoices();
     ReignsGame.getInstance().activate();
+    ReignsGame.getInstance().setUpStats();
   }
 
   turnCardLeft () {
